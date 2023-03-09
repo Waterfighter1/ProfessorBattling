@@ -7,6 +7,7 @@ class battler:
     #STATS
     #Hp - Health Points / At - Attack / Df - Defense / Sp - Speed
     hp = 0
+    inithp = 0
     at = 0
     df = 0
     sp = 0
@@ -24,6 +25,7 @@ class battler:
     def __init__(self, btNum, name, hp, at, df, sp, tp, mvs):
         self.name = name
         self.hp = int(hp)
+        self.inithp = int(hp)
         self.at = int(at)
         self.df = int(df)
         self.sp = int(sp)
@@ -43,10 +45,30 @@ class battler:
             print(f"{self.btNum}. {self.name}\tHP:{self.hp}  AT:{self.at}  DF:{self.df}  SP:{self.sp}  TYPE:{tpDisplay}")
 
     def battlerStatus(self):
-        displayHP = f"{self.hp:.2f}"
+        displayNumHP = f"{self.hp:.2f}"
+        displayHP = ""
         if self.hp <= 0:
-            displayHP = "KNOCKED OUT"
-        print(f"HP:{displayHP}  AT:{self.at:.2f}  DF:{self.df:.2f}  SP:{self.sp:.2f}")
+            displayHP = "[           ]"
+            displayNumHP = "KNOCKED OUT"
+        else:
+            displayHP = "["
+            percentOfHealth = (self.hp / self.inithp) * 10
+            # 80% Health = percentOfHealth = 8.0
+            numberOfBars = percentOfHealth
+            while numberOfBars > 0:
+                displayHP += "/"
+                numberOfBars -= 1
+
+            numberOfBars = 10 - percentOfHealth
+
+            while numberOfBars > 0:
+                displayHP += " "
+                numberOfBars -= 1
+
+            displayHP += "]"
+
+        print(displayHP)
+        print(f"HP:{displayNumHP}  AT:{self.at:.2f}  DF:{self.df:.2f}  SP:{self.sp:.2f}")
 class move:
     number = 0      #Identifer of Move
     name = ''
@@ -94,7 +116,6 @@ class move:
             stsDisplay = str(self.sts[0]) + " " + str(self.sts[1])
         
         self.des = des + (f"\n\nDamage:{self.dmg} / Accuracy:{self.acc} \nEffective Against: {eatDisplay} / Not Effective Against: {natDisplay} \nStatus To Self: {stsDisplay} / Status to Opponent: {stoDisplay}")
-
 def intro(battlers):
     accAnswers = ['1','2','3','4','5','6']  # List of acceptible answers to choose a battler
     userInput = ''                          # Allocates the input to one variable across the whole program
@@ -159,7 +180,6 @@ def determineOpponent(battlers,userBattler):
     #Display oponent and return the oponent
     print(f"Opponent chosen{randomChoice}")
     return randomChoice
-
 def readBattlersFile():
     battlers = []
     with open('battlers.txt') as bFile:
@@ -175,7 +195,6 @@ def readBattlersFile():
 
 
     return battlers
-
 def readMovesFile():
     moves = []
     with open('moves.txt') as mFile:
@@ -188,7 +207,6 @@ def readMovesFile():
             moves.append(move(moveLine[0], moveLine[1].replace("_"," "), moveLine[2], moveLine[3], moveLine[4], moveLine[5],moveLine[6].split("|"), moveLine[7].split("|"), moveLine[8].replace("_"," ")))
 
     return moves
-
 def determineBattlers():
 
     battlers = readBattlersFile()
@@ -197,7 +215,7 @@ def determineBattlers():
     i = 0
     while i < len(battlers) - 1:
         j = 0
-        battlers[i].battlerDesc()
+        #battlers[i].battlerDesc()
         while j < len(battlers[i].mvs):
            battlers[i].mvs[j] = moves[int(battlers[i].mvs[j])]
            j += 1
