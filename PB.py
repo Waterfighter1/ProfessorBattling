@@ -55,15 +55,19 @@ class battler:
             percentOfHealth = (self.hp / self.inithp) * 10
             # 80% Health = percentOfHealth = 8.0
             numberOfBars = percentOfHealth
-            while numberOfBars > 0:
-                displayHP += "/"
-                numberOfBars -= 1
 
-            numberOfBars = 10 - percentOfHealth
+            if percentOfHealth <= 10:
+                while numberOfBars > 0:
+                    displayHP += "/"
+                    numberOfBars -= 1
 
-            while numberOfBars > 0:
-                displayHP += " "
-                numberOfBars -= 1
+                numberOfBars = int(10 - percentOfHealth)
+
+                while numberOfBars > 0:
+                    displayHP += " "
+                    numberOfBars -= 1
+            else:
+                displayHP += "//////////"
 
             displayHP += "]"
 
@@ -230,6 +234,11 @@ def determineBattlers():
 def dealAttack(target, origin, move):
     # Determine Accuracy. If the number is greater than the accuracy number, it misses. If it is the same or smaller, it hits
     rnd = random.randint(1, 100)
+
+    # If who you're trying to hit is faster than you
+    if target.sp > origin.sp:
+        accuracyModifer = target.sp / 5.5
+        rnd = rnd + accuracyModifer
 
     #Store the original move damage
     tempMoveDmg = move.dmg
